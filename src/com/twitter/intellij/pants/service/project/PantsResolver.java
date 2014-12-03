@@ -207,7 +207,7 @@ public class PantsResolver {
     }
 
     for (File root : rootFiles) {
-      PantsUtil.processFilesRecursively(
+      PantsUtil.traverseFilesRecursively(
         root,
         new Processor<File>() {
           @Override

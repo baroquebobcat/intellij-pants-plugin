@@ -60,7 +60,7 @@ public class PantsProjectResolver implements ExternalSystemProjectResolver<Pants
       workingDir.getPath() + "/.idea/pants-projects/" + relativeProjectPath,
       projectPath
     );
-    DataNode<ProjectData> projectDataNode = new DataNode<ProjectData> (ProjectKeys.PROJECT, projectData, null);
+    final DataNode<ProjectData> projectDataNode = new DataNode<ProjectData> (ProjectKeys.PROJECT, projectData, null);
 
     resolveUsingPantsGoal(id, projectPath, settings, listener, projectDataNode, isPreviewMode);
 

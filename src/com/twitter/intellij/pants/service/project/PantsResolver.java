@@ -14,12 +14,9 @@ import com.intellij.openapi.externalSystem.model.DataNode;
 import com.intellij.openapi.externalSystem.model.ExternalSystemException;
 import com.intellij.openapi.externalSystem.model.ProjectKeys;
 import com.intellij.openapi.externalSystem.model.project.*;
-import com.intellij.openapi.externalSystem.model.task.ExternalSystemTaskId;
-import com.intellij.openapi.externalSystem.model.task.ExternalSystemTaskNotificationListener;
 import com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil;
 import com.intellij.openapi.module.ModuleTypeId;
 import com.intellij.openapi.util.Condition;
-import com.intellij.openapi.util.Key;
 import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.text.StringUtil;
@@ -198,25 +195,45 @@ public class PantsResolver {
       return;
     }
 
-    final Set<String> rootPaths = new HashSet<String>();
+    final Set<File> rootFiles = new HashSet<File>();
     for (ExternalSystemSourceType sourceType : ExternalSystemSourceType.values()) {
+      if (sourceType.isResource()) {
+        // skip resources
+        continue;
+      }
       for (ContentRootData.SourceRoot sourceRoot : contentRoot.getPaths(sourceType)) {
-        rootPaths.add(sourceRoot.getPath());
+        rootFiles.add(new File(sourceRoot.getPath()));
       }
     }
 
-    FileUtil.processFilesRecursively(
-      contentRootFolder,
-      new Processor<File>() {
-        @Override
-        public boolean process(final File file) {
-          if (file.isDirectory() && !rootPaths.contains(file.getAbsolutePath())) {
-            contentRoot.storePath(ExternalSystemSourceType.EXCLUDED, file.getAbsolutePath());
+    for (File root : rootFiles) {
+      FileUtil.processFilesRecursively(
+        root,
+        new Processor<File>() {
+          @Override
+          public boolean process(final File file) {
+            if (file.isDirectory() && !containsSourceRoot(file)) {
+              contentRoot.storePath(ExternalSystemSourceType.EXCLUDED, file.getAbsolutePath());
+              return false;
+            }
+            return true;
           }
-          return true;
+
+          /**
+           * Checks if {@code file} contains or is a source root.
+           */
+          private boolean containsSourceRoot(@NotNull File file) {
+            for (File rootFile : rootFiles) {
+              if (FileUtil.isAncestor(file, rootFile, false)) {
+                return true;
+              }
+            }
+
+            return false;
+          }
         }
-      }
-    );
+      );
+    }
   }
 
   private boolean isEmpty(@NotNull ContentRootData contentRoot) {

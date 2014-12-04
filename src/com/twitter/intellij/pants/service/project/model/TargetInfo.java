@@ -105,15 +105,6 @@ public class TargetInfo {
     return StringUtil.equals("scala_library", getInternalPantsTargetType());
   }
 
-  public boolean hasScalaLib() {
-    for (String libraryId : libraries) {
-      if (StringUtil.startsWith(libraryId, "org.scala-lang:scala-library")) {
-        return true;
-      }
-    }
-    return false;
-  }
-
   public boolean dependOn(@NotNull String targetName) {
     return targets.contains(targetName);
   }

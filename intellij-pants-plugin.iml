@@ -7,6 +7,7 @@
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/resources" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/testFramework" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/.pants.d" />
       <excludeFolder url="file://$MODULE_DIR$/build-support" />
     </content>
@@ -22,5 +23,14 @@
       </library>
     </orderEntry>
     <orderEntry type="library" name="scala-sdk-2.11.2" level="application" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/testData/external-system-test-api-impl.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>

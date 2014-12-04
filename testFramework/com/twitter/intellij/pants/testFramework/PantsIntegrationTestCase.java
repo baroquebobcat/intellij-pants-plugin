@@ -1,7 +1,7 @@
 // Copyright 2014 Pants project contributors (see CONTRIBUTORS.md).
 // Licensed under the Apache License, Version 2.0 (see LICENSE).
 
-package com.twitter.intellij.pants.integration.base;
+package com.twitter.intellij.pants.testFramework;
 
 import com.intellij.compiler.impl.ModuleCompileScope;
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
@@ -15,6 +15,7 @@ import com.intellij.openapi.externalSystem.model.ProjectSystemId;
 import com.intellij.openapi.externalSystem.settings.ExternalProjectSettings;
 import com.intellij.openapi.externalSystem.test.ExternalSystemImportingTestCase;
 import com.intellij.openapi.module.Module;
+import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.CompilerModuleExtension;
 import com.intellij.openapi.roots.ModuleRootManager;
@@ -31,6 +32,7 @@ import com.intellij.testFramework.CompilerTester;
 import com.intellij.util.ArrayUtil;
 import com.twitter.intellij.pants.settings.PantsProjectSettings;
 import com.twitter.intellij.pants.util.PantsConstants;
+import junit.framework.TestCase;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
@@ -62,7 +64,7 @@ public abstract class PantsIntegrationTestCase extends ExternalSystemImportingTe
 
     for (String pluginId : getRequiredPluginIds()) {
       final IdeaPluginDescriptor plugin = PluginManager.getPlugin(PluginId.getId(pluginId));
-      assertNotNull(pluginId + " plugin should be in classpath for integration tests", plugin);
+      TestCase.assertNotNull(pluginId + " plugin should be in classpath for integration tests", plugin);
       if (!plugin.isEnabled()) {
         PluginManagerCore.enablePlugin(pluginId);
       }
@@ -82,7 +84,7 @@ public abstract class PantsIntegrationTestCase extends ExternalSystemImportingTe
     super.setUpInWriteAction();
     for (File projectTemplateFolder : getProjectFoldersToCopy()) {
       if (!projectTemplateFolder.exists() || !projectTemplateFolder.isDirectory()) {
-        fail("invalid template project path " + projectTemplateFolder.getAbsolutePath());
+        TestCase.fail("invalid template project path " + projectTemplateFolder.getAbsolutePath());
       }
 
       FileUtil.copyDirContent(projectTemplateFolder, new File(myProjectRoot.getPath()));
@@ -103,14 +105,14 @@ public abstract class PantsIntegrationTestCase extends ExternalSystemImportingTe
 
   @Nullable
   protected VirtualFile findClassFile(String className, String moduleName) {
-    assertNotNull("Compilation wasn't completed successfully!", getCompilerTester());
+    TestCase.assertNotNull("Compilation wasn't completed successfully!", getCompilerTester());
     return getCompilerTester().findClassFile(className, getModule(moduleName));
   }
 
   @Nullable
   protected PsiClass findClass(@NonNls @NotNull String qualifiedName) {
     PsiClass[] classes = JavaPsiFacade.getInstance(myProject).findClasses(qualifiedName, GlobalSearchScope.allScope(myProject));
-    assertTrue(classes.length < 2);
+    TestCase.assertTrue(classes.length < 2);
     return classes.length > 0 ? classes[0] : null;
   }
 
@@ -121,7 +123,7 @@ public abstract class PantsIntegrationTestCase extends ExternalSystemImportingTe
 
   protected void assertGotoFileContains(String filename) {
     final GotoFileModel gotoFileModel = new GotoFileModel(myProject);
-    assertTrue(ArrayUtil.contains(filename, gotoFileModel.getNames(false)));
+    TestCase.assertTrue(ArrayUtil.contains(filename, gotoFileModel.getNames(false)));
   }
 
   @Override
@@ -135,6 +137,11 @@ public abstract class PantsIntegrationTestCase extends ExternalSystemImportingTe
    */
   protected void makeModules(final String... moduleNames) {
     make(createModulesCompileScope(moduleNames));
+  }
+
+  protected void compileProject() {
+    Module[] modules = ModuleManager.getInstance(myProject).getModules();
+
   }
 
   private void make(final CompileScope scope) {
@@ -151,7 +158,7 @@ public abstract class PantsIntegrationTestCase extends ExternalSystemImportingTe
           );
         switch (message.getCategory()) {
           case ERROR:
-            fail("Compilation failed with error: " + prettyMessage);
+            TestCase.fail("Compilation failed with error: " + prettyMessage);
             break;
           case WARNING:
             System.out.println("Compilation warning: " + prettyMessage);

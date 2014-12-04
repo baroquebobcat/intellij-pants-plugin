@@ -4,8 +4,8 @@
 package com.twitter.intellij.pants.integration.oss;
 
 import com.intellij.openapi.util.text.StringUtil;
-import com.twitter.intellij.pants.integration.base.PantsIntegrationTestCase;
-import com.twitter.intellij.pants.util.PantsTestUtils;
+import com.twitter.intellij.pants.testFramework.PantsIntegrationTestCase;
+import com.twitter.intellij.pants.testFramework.PantsTestUtils;
 
 import java.io.File;
 import java.util.Arrays;

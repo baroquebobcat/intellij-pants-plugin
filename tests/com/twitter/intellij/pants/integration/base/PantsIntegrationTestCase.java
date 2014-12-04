@@ -85,9 +85,8 @@ public abstract class PantsIntegrationTestCase extends ExternalSystemImportingTe
     // two tests with the same name will have the same project dir.
     // So let's ensure the project dir is empty before coping the contents
     final File projectDir = new File(myProjectRoot.getPath());
-    if (projectDir.exists()) {
-      assertTrue(FileUtil.delete(projectDir));
-    }
+    assertTrue(projectDir.exists()); // super.setUpInWriteAction created it for sure
+    assertTrue(FileUtil.delete(projectDir));
     FileUtil.ensureExists(projectDir);
 
     for (File projectTemplateFolder : getProjectFoldersToCopy()) {

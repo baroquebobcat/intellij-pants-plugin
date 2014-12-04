@@ -189,10 +189,14 @@ public abstract class PantsIntegrationTestCase extends ExternalSystemImportingTe
       Messages.setTestDialog(TestDialog.DEFAULT);
     }
     finally {
+      final File projectRootFile = new File(myProjectRoot.getPath());
       super.tearDown();
       // double check.
       if (myProject != null && !myProject.isDisposed()) {
         Disposer.dispose(myProject);
+      }
+      if (projectRootFile.exists()) {
+        FileUtil.delete(projectRootFile);
       }
     }
   }

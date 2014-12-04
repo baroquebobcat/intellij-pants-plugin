@@ -81,14 +81,7 @@ public abstract class PantsIntegrationTestCase extends ExternalSystemImportingTe
   protected void setUpInWriteAction() throws Exception {
     super.setUpInWriteAction();
 
-    // It appeared because ExternalSystemTestCase#ourTempDir is static
-    // two tests with the same name will have the same project dir.
-    // So let's ensure the project dir is empty before coping the contents
     final File projectDir = new File(myProjectRoot.getPath());
-    assertTrue(projectDir.exists()); // super.setUpInWriteAction created it for sure
-    assertTrue(FileUtil.delete(projectDir));
-    FileUtil.ensureExists(projectDir);
-
     for (File projectTemplateFolder : getProjectFoldersToCopy()) {
       if (!projectTemplateFolder.exists() || !projectTemplateFolder.isDirectory()) {
         fail("invalid template project path " + projectTemplateFolder.getAbsolutePath());

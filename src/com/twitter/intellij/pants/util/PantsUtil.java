@@ -314,8 +314,16 @@ public class PantsUtil {
 
   @Nullable @NonNls
   public static PantsTargetAddress getTargetAddressFromModule(@NotNull @Nls Module module) {
+    if (!isPantsModule(module)) {
+      return null;
+    }
     final String targetAddress = module.getOptionValue(ExternalSystemConstants.LINKED_PROJECT_ID_KEY);
     return targetAddress != null ? PantsTargetAddress.fromString(targetAddress) : null;
+  }
+
+  public static boolean isPantsModule(@NotNull @Nls Module module) {
+    final String systemId = module.getOptionValue(ExternalSystemConstants.EXTERNAL_SYSTEM_ID_KEY);
+    return StringUtil.equals(systemId, PantsConstants.SYSTEM_ID.getId());
   }
 
   @NotNull

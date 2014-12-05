@@ -82,13 +82,18 @@ public abstract class PantsIntegrationTestCase extends ExternalSystemImportingTe
   @Override
   protected void setUpInWriteAction() throws Exception {
     super.setUpInWriteAction();
+
+    final File projectDir = new File(myProjectRoot.getPath());
     for (File projectTemplateFolder : getProjectFoldersToCopy()) {
       if (!projectTemplateFolder.exists() || !projectTemplateFolder.isDirectory()) {
         TestCase.fail("invalid template project path " + projectTemplateFolder.getAbsolutePath());
       }
 
-      FileUtil.copyDirContent(projectTemplateFolder, new File(myProjectRoot.getPath()));
+      FileUtil.copyDirContent(projectTemplateFolder, projectDir);
     }
+    // work around copyDirContent's copying of symlinks as hard links causing pants to fail
+    FileUtil.delete(new File(myProjectRoot.getPath() + "/.pants.d/runs/latest"));
+    FileUtil.delete(new File(myProjectRoot.getPath() + "/.pants.d/reports/latest"));
   }
 
   abstract protected List<File> getProjectFoldersToCopy();

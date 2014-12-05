@@ -3,7 +3,9 @@
 
 package com.twitter.intellij.pants.integration.oss;
 
-public class OSSPantsScalaExamplesIntegrationTest extends OSSPantsIntegrationTest {
+import com.twitter.intellij.pants.testFramework.runner.CustomProjectIntegrationTests;
+
+public class OSSPantsScalaExamplesIntegrationTest extends CustomProjectIntegrationTests.OSSPantsIntegrationTest {
   public void testHello() throws Throwable {
     doImport("examples/src/scala/com/pants/example/hello");
 

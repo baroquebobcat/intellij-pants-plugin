@@ -1,4 +1,4 @@
-junit_tests(
+java_library(
     name = 'test-lib',
     dependencies = [
         '3rdparty/intellij:sdk',

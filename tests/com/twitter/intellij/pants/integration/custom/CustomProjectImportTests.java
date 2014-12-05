@@ -13,6 +13,7 @@ import org.junit.runner.RunWith;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 @RunWith(Parameterized.class)
@@ -29,12 +30,17 @@ public class CustomProjectImportTests extends OSSPantsIntegrationTest {
   }
 
   @Parameters(name="{0}")
-  public static Iterable<String> generateParameters() throws IOException {
+  public static Iterable<String> generateParameters(){
     assertNotNull(projectConfigFileName);
     File projectConfigFile = new File(projectConfigFileName);
     assertExists(projectConfigFile);
-    final String[] testProjectList = StringUtil.splitByLines(FileUtil.loadFile(projectConfigFile));
-    return Arrays.asList(testProjectList);
+    try{
+      final String[] testProjectList = StringUtil.splitByLines(FileUtil.loadFile(projectConfigFile));
+      return Arrays.asList(testProjectList);
+    } catch (IOException e) {
+
+    }
+    return (new ArrayList<String>());
   }
 
   public void testProject() {

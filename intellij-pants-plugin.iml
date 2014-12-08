@@ -12,6 +12,8 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="jps-plugin" scope="RUNTIME" />
+    <orderEntry type="module" module-name="common" />
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>

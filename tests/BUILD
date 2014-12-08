@@ -4,7 +4,8 @@ junit_tests(
         '3rdparty/intellij:sdk',
         '3rdparty/intellij:python-plugin',
         '3rdparty/intellij:scala-plugin',
-        'src:pants-intellij-plugin-scala'
+        'jps-plugin',
+        'src:pants-intellij-plugin-java'
     ],
     sources = rglobs('*.java')
 )

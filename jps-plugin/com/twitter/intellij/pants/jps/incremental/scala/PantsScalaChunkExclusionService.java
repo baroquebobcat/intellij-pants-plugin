@@ -11,7 +11,7 @@ import org.jetbrains.jps.model.module.JpsModule;
 
 public class PantsScalaChunkExclusionService extends ChunkExclusionService {
   @Override
-  public boolean isExcluded(ModuleChunk chunk, JpsGlobal global) {
+  public boolean isExcluded(ModuleChunk chunk) {
     for (JpsModule module : chunk.getModules()) {
       if (PantsJpsModelSerializerExtension.findPantsModuleExtension(module) != null) {
         return true;

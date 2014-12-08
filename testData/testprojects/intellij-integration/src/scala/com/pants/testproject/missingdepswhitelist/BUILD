@@ -1,4 +1,4 @@
-java_library(name='missingdepswhitelist',
+scala_library(name='missingdepswhitelist',
   sources=rglobs('*.scala'),
   dependencies=[
     'testprojects/src/java/com/pants/testproject/publish/hello/greet',

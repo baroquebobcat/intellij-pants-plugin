@@ -32,7 +32,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class PantsBuilder extends ModuleLevelBuilder {
-  private static final Logger LOG = Logger.getInstance("#org.jetbrains.jps.incremental.java.JavaBuilder");
+  private static final Logger LOG = Logger.getInstance("#com.twitter.intellij.pants.jps.incremental.PantsBuilder");
 
   protected PantsBuilder() {
     super(BuilderCategory.SOURCE_PROCESSOR);

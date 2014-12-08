@@ -153,14 +153,20 @@ public class PantsResolver {
             }
           )
         );
-        final String compilerOutputRelativePath = targetInfo.isScalaTarget() ?
-                                                  ".pants.d/compile/jvm/scala/classes" :
-                                                  ".pants.d/compile/jvm/java/classes";
+        String compilerOutputRelativePath = ".pants.d/compile/jvm/java/classes";
+        if (targetInfo.isScalaTarget() || targetInfo.hasScalaLib()) {
+          compilerOutputRelativePath = ".pants.d/compile/jvm/scala/classes";
+        } else if (targetInfo.isAnnotationProcessotTarget()) {
+          compilerOutputRelativePath = ".pants.d/compile/jvm/apt/classes";
+        }
         final String absoluteCompilerOutputPath = new File(myWorkDirectory, compilerOutputRelativePath).getPath();
         final ModuleData moduleData = moduleDataNode.getData();
         moduleData.setInheritProjectCompileOutputPath(false);
         moduleData.setCompileOutputPath(ExternalSystemSourceType.SOURCE, absoluteCompilerOutputPath);
-        moduleData.setCompileOutputPath(ExternalSystemSourceType.TEST, absoluteCompilerOutputPath);
+        if (!ApplicationManager.getApplication().isUnitTestMode()) {
+          // todo(fkorotkov): remove once ServerMediator#checkCompilationSettings won't show a dialog in tests
+          moduleData.setCompileOutputPath(ExternalSystemSourceType.TEST, absoluteCompilerOutputPath);
+        }
       }
     }
 
@@ -551,7 +557,10 @@ public class PantsResolver {
       final GeneralCommandLine commandLine = PantsUtil.defaultCommandLine(projectPath);
       myWorkDirectory = commandLine.getWorkDirectory();
       commandLine.addParameter("goal");
-      if (generateJars) {
+      // in unit test mode it's always preview but we need to know libraries
+      // because some jvm_binary targets are actually Scala ones and we need to
+      // set a proper com.twitter.intellij.pants.compiler output folder
+      if (generateJars || ApplicationManager.getApplication().isUnitTestMode()) {
         commandLine.addParameter("resolve");
       }
       String relativeProjectPath = PantsUtil.getRelativeProjectPath(projectPath, myWorkDirectory);

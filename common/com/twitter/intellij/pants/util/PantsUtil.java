@@ -67,6 +67,10 @@ public class PantsUtil {
     return isBUILDFileName(PathUtil.getFileName(path));
   }
 
+  private static boolean isBUILDFile(@NotNull VirtualFile virtualFile) {
+    return !virtualFile.isDirectory() && isBUILDFileName(virtualFile.getName());
+  }
+
   public static boolean isBUILDFileName(@NotNull String name) {
     return PantsConstants.BUILD.equals(FileUtil.getNameWithoutExtension(name));
   }
@@ -366,7 +370,7 @@ public class PantsUtil {
       new Condition<Module>() {
         @Override
         public boolean value(Module module) {
-          final VirtualFile moduleBUILDFile = findBUILDFileForModule(module, workingDir);
+          final VirtualFile moduleBUILDFile = findBUILDFileForModule(module);
           return file.equals(moduleBUILDFile);
         }
       }
@@ -375,14 +379,13 @@ public class PantsUtil {
 
   @Nullable
   public static VirtualFile findBUILDFileForModule(@NotNull Module module) {
-    final VirtualFile workingDir = PantsUtil.findPantsWorkingDir(module);
-    return workingDir == null ? null : findBUILDFileForModule(module, workingDir);
-  }
-
-  @Nullable
-  public static VirtualFile findBUILDFileForModule(@NotNull Module module, @NotNull VirtualFile workingDir) {
     final String linkedPantsBUILD = module.getOptionValue(ExternalSystemConstants.LINKED_PROJECT_PATH_KEY);
-    return linkedPantsBUILD != null ? workingDir.findFileByRelativePath(linkedPantsBUILD) : null;
+    final String linkedPantsBUILDUrl = linkedPantsBUILD != null ? VfsUtil.pathToUrl(linkedPantsBUILD) : null;
+    final VirtualFile virtualFile = linkedPantsBUILDUrl != null ? VirtualFileManager.getInstance().refreshAndFindFileByUrl(linkedPantsBUILDUrl) : null;
+    if (virtualFile == null) {
+      return null;
+    }
+    return isBUILDFile(virtualFile) ? virtualFile : findBUILDFile(virtualFile);
   }
 
   public static <K, V1, V2> Map<K, V2> mapValues(Map<K, V1> map, Function<V1, V2> fun) {

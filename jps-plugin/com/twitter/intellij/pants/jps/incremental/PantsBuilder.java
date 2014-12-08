@@ -61,8 +61,8 @@ public class PantsBuilder extends ModuleLevelBuilder {
     DirtyFilesHolder<JavaSourceRootDescriptor, ModuleBuildTarget> dirtyFilesHolder,
     OutputConsumer outputConsumer
   ) throws ProjectBuildException, IOException {
-    final List<JpsPantsModuleExtension> jpsExtensions = ContainerUtil.notNullize(
-      ContainerUtil.map(
+    final List<JpsPantsModuleExtension> jpsExtensions =
+      ContainerUtil.mapNotNull(
         chunk.getModules(),
         new Function<JpsModule, JpsPantsModuleExtension>() {
           @Override
@@ -74,8 +74,7 @@ public class PantsBuilder extends ModuleLevelBuilder {
             return PantsJpsModelSerializerExtension.findPantsModuleExtension(module);
           }
         }
-      )
-    );
+      );
 
     if (jpsExtensions.isEmpty()) {
       return ExitCode.NOTHING_DONE;

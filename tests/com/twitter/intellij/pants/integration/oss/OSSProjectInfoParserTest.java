@@ -8,10 +8,10 @@ import com.twitter.intellij.pants.service.project.PantsResolver;
 import com.twitter.intellij.pants.service.project.model.ProjectInfo;
 import com.twitter.intellij.pants.service.project.model.TargetInfo;
 import com.twitter.intellij.pants.settings.PantsExecutionSettings;
-import com.twitter.intellij.pants.testFramework.runner.CustomProjectIntegrationTests;
+import com.twitter.intellij.pants.testFramework.OSSPantsIntegrationTest;
 import org.jetbrains.annotations.NotNull;
 
-public class OSSProjectInfoParserTest extends CustomProjectIntegrationTests.OSSPantsIntegrationTest {
+public class OSSProjectInfoParserTest extends OSSPantsIntegrationTest {
   @NotNull
   public ProjectInfo resolveProjectInfo(@NotNull String relativeProjectPath) {
     final String absoluteProjectPath = FileUtil.join(getOSSFolder().getAbsolutePath(), relativeProjectPath);

@@ -21,14 +21,14 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
 import com.intellij.util.containers.ContainerUtil;
-import com.twitter.intellij.pants.testFramework.runner.CustomProjectIntegrationTests;
+import com.twitter.intellij.pants.testFramework.OSSPantsIntegrationTest;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-abstract public class PantsHighlightingIntegrationTest extends CustomProjectIntegrationTests.OSSPantsIntegrationTest {
+abstract public class PantsHighlightingIntegrationTest extends OSSPantsIntegrationTest {
   @Override
   public void tearDown() throws Exception {
     final FileEditorManager fileEditorManager = FileEditorManager.getInstance(myProject);

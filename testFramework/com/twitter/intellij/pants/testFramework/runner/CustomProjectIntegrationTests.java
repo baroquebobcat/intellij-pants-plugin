@@ -23,7 +23,8 @@ import java.util.List;
 @RunWith(Parameterized.class)
 public class CustomProjectIntegrationTests extends PantsIntegrationTestCase {
 
-  private static final String PROJECT_LIST = "project.config.list";
+  private static final String CUSTOM_TARGET_LIST_FILE = "project.target.list.file";
+  private static final String CUSTOM_TARGETS = "project.targets";
   private static final String CUSTOM_PROJECT_WS = "project.workspace";
 
   @org.junit.runners.Parameterized.Parameter()
@@ -35,13 +36,40 @@ public class CustomProjectIntegrationTests extends PantsIntegrationTestCase {
   }
 
   @Parameterized.Parameters(name = "{0}")
-    public static Collection<Object[]> getProjectList(){
-    String projectConfigFileName = System.getProperty(PROJECT_LIST);
-    assertNotNull(projectConfigFileName);
+  public static Collection<Object[]> getProjectList(){
+    String projectConfigFileName = System.getProperty(CUSTOM_TARGET_LIST_FILE);
+    String targets = System.getProperty(CUSTOM_TARGETS);
+    assertTrue("Only on of project.targets or project.target.list.file can be supplied",
+               projectConfigFileName == null || targets == null);
+    if(projectConfigFileName != null) {
+      return getTargetsFromFile(projectConfigFileName);
+    }
+   return getTargetFromCmdLine(targets);
+  }
+
+  @Test
+  public void testProject() {
+    assertNotNull(target);
+    doImport(target);
+    compileProject();
+  }
+
+  @Override
+  protected List<File> getProjectFoldersToCopy() {
+    final String projectWorkspace = System.getProperty(CUSTOM_PROJECT_WS);
+    assertNotNull(projectWorkspace);
+    ArrayList<File> folders = new ArrayList<File>();
+    File projectWorkspaceFolder = new File(projectWorkspace);
+    assertExists(projectWorkspaceFolder);
+    folders.add(projectWorkspaceFolder);
+    return folders;
+  }
+
+  private static Collection<Object[]> getTargetsFromFile(String projectConfigFileName) {
     File projectConfigFile = new File(projectConfigFileName);
     assertExists(projectConfigFile);
     try{
-     final String[] testProjectList = StringUtil.splitByLines(FileUtil.loadFile(projectConfigFile));
+      final String[] testProjectList = StringUtil.splitByLines(FileUtil.loadFile(projectConfigFile));
       return ContainerUtil.map(
         testProjectList, new Function<String, Object[]>() {
           @Override
@@ -51,27 +79,20 @@ public class CustomProjectIntegrationTests extends PantsIntegrationTestCase {
         }
       );
     } catch (IOException e) {
-       assertTrue("File not found", false);
+      assertTrue("File not found", false);
     }
     return null;
   }
 
-  @Test
-  public void testProject() {
-    assertNotNull(target);
-    //doImport(projectLocation);
-    //compileProject();
-  }
-
-  @Override
-  protected List<File> getProjectFoldersToCopy() {
-    final String projectWorkspace = System.getProperty(CUSTOM_PROJECT_WS);
-    System.out.println("this is " + projectWorkspace);
-    assertNotNull(projectWorkspace);
-    ArrayList<File> folders = new ArrayList<File>();
-    File projectWorkspaceFolder = new File(projectWorkspace);
-    assertExists(projectWorkspaceFolder);
-    folders.add(projectWorkspaceFolder);
-    return folders;
+  private static Collection<Object[]> getTargetFromCmdLine(String targets) {
+    assertNotNull(targets);
+    return ContainerUtil.map(
+      targets.split(","), new Function<String, Object[]>() {
+        @Override
+        public Object[] fun(String target) {
+          return new Object[]{target, target};
+        }
+      }
+    );
   }
 }

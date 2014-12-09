@@ -30,6 +30,8 @@ import com.intellij.psi.PsiClass;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.testFramework.CompilerTester;
 import com.intellij.util.ArrayUtil;
+import com.intellij.util.Function;
+import com.intellij.util.containers.ContainerUtil;
 import com.twitter.intellij.pants.settings.PantsProjectSettings;
 import com.twitter.intellij.pants.util.PantsConstants;
 import junit.framework.TestCase;
@@ -146,7 +148,14 @@ public abstract class PantsIntegrationTestCase extends ExternalSystemImportingTe
 
   protected void compileProject() {
     Module[] modules = ModuleManager.getInstance(myProject).getModules();
-    //makeModules();
+    List<String> moduleNamesList = ContainerUtil.map(
+      modules, new Function<Module, String>() {
+        @Override
+        public String fun(Module module) {
+          return module.getName();
+        }
+      });
+    makeModules(moduleNamesList.toArray(new String[moduleNamesList.size()]));
   }
 
   private void make(final CompileScope scope) {

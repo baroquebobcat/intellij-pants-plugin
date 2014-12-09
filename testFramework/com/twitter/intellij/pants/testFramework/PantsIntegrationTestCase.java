@@ -146,7 +146,7 @@ public abstract class PantsIntegrationTestCase extends ExternalSystemImportingTe
 
   protected void compileProject() {
     Module[] modules = ModuleManager.getInstance(myProject).getModules();
-
+    //makeModules();
   }
 
   private void make(final CompileScope scope) {

@@ -34,7 +34,6 @@ import com.intellij.util.Function;
 import com.intellij.util.containers.ContainerUtil;
 import com.twitter.intellij.pants.settings.PantsProjectSettings;
 import com.twitter.intellij.pants.util.PantsConstants;
-import junit.framework.TestCase;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
@@ -66,7 +65,7 @@ public abstract class PantsIntegrationTestCase extends ExternalSystemImportingTe
 
     for (String pluginId : getRequiredPluginIds()) {
       final IdeaPluginDescriptor plugin = PluginManager.getPlugin(PluginId.getId(pluginId));
-      TestCase.assertNotNull(pluginId + " plugin should be in classpath for integration tests", plugin);
+      assertNotNull(pluginId + " plugin should be in classpath for integration tests", plugin);
       if (!plugin.isEnabled()) {
         PluginManagerCore.enablePlugin(pluginId);
       }
@@ -88,7 +87,7 @@ public abstract class PantsIntegrationTestCase extends ExternalSystemImportingTe
     final File projectDir = new File(myProjectRoot.getPath());
     for (File projectTemplateFolder : getProjectFoldersToCopy()) {
       if (!projectTemplateFolder.exists() || !projectTemplateFolder.isDirectory()) {
-        TestCase.fail("invalid template project path " + projectTemplateFolder.getAbsolutePath());
+        fail("invalid template project path " + projectTemplateFolder.getAbsolutePath());
       }
 
       FileUtil.copyDirContent(projectTemplateFolder, projectDir);
@@ -112,14 +111,14 @@ public abstract class PantsIntegrationTestCase extends ExternalSystemImportingTe
 
   @Nullable
   protected VirtualFile findClassFile(String className, String moduleName) {
-    TestCase.assertNotNull("Compilation wasn't completed successfully!", getCompilerTester());
+    assertNotNull("Compilation wasn't completed successfully!", getCompilerTester());
     return getCompilerTester().findClassFile(className, getModule(moduleName));
   }
 
   @Nullable
   protected PsiClass findClass(@NonNls @NotNull String qualifiedName) {
     PsiClass[] classes = JavaPsiFacade.getInstance(myProject).findClasses(qualifiedName, GlobalSearchScope.allScope(myProject));
-    TestCase.assertTrue(classes.length < 2);
+    assertTrue(classes.length < 2);
     return classes.length > 0 ? classes[0] : null;
   }
 
@@ -130,7 +129,7 @@ public abstract class PantsIntegrationTestCase extends ExternalSystemImportingTe
 
   protected void assertGotoFileContains(String filename) {
     final GotoFileModel gotoFileModel = new GotoFileModel(myProject);
-    TestCase.assertTrue(ArrayUtil.contains(filename, gotoFileModel.getNames(false)));
+    assertTrue(ArrayUtil.contains(filename, gotoFileModel.getNames(false)));
   }
 
   @Override
@@ -172,7 +171,7 @@ public abstract class PantsIntegrationTestCase extends ExternalSystemImportingTe
           );
         switch (message.getCategory()) {
           case ERROR:
-            TestCase.fail("Compilation failed with error: " + prettyMessage);
+            fail("Compilation failed with error: " + prettyMessage);
             break;
           case WARNING:
             System.out.println("Compilation warning: " + prettyMessage);

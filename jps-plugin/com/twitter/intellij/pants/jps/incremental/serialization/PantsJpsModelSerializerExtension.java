@@ -12,6 +12,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.jps.model.module.JpsModule;
 import org.jetbrains.jps.model.serialization.JpsModelSerializerExtension;
+import org.jetbrains.jps.model.serialization.JpsProjectExtensionSerializer;
+
+import java.util.Collections;
+import java.util.List;
 
 public class PantsJpsModelSerializerExtension extends JpsModelSerializerExtension {
   // same as in ExternalSystemConstants but it's be in an external process so we can't use it directly
@@ -22,6 +26,12 @@ public class PantsJpsModelSerializerExtension extends JpsModelSerializerExtensio
   @Nullable
   public static JpsPantsModuleExtension findPantsModuleExtension(JpsModule module) {
     return module.getContainer().getChild(JpsPantsModuleExtension.ROLE);
+  }
+
+  @NotNull
+  @Override
+  public List<? extends JpsProjectExtensionSerializer> getProjectExtensionSerializers() {
+    return Collections.singletonList(new PantsJpsProjectExtensionSerializer());
   }
 
   @Override

@@ -87,6 +87,7 @@
 
   <extensions defaultExtensionNs="com.intellij">
     <compileServer.plugin classpath="pants-jps-plugin.jar"/>
+    <compiler.buildTargetScopeProvider implementation="com.twitter.intellij.pants.compiler.PantsBuildTargetScopeProvider"/>
     <buildProcess.parametersProvider implementation="com.twitter.intellij.pants.compiler.PantsBuildProcessParametersProvider"/>
     <!--<moduleBuilder builderClass="com.twitter.intellij.pants.service.project.wizard.PantsModuleBuilder"/>-->
     <projectImportProvider

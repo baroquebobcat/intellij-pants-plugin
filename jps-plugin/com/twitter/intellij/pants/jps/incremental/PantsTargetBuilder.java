@@ -8,90 +8,80 @@ import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.process.*;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.util.Key;
-import com.intellij.util.Function;
-import com.intellij.util.containers.ContainerUtil;
-import com.twitter.intellij.pants.jps.incremental.serialization.PantsJpsModelSerializerExtension;
+import com.intellij.openapi.util.io.FileUtil;
+import com.twitter.intellij.pants.jps.incremental.model.PantsBuildTarget;
+import com.twitter.intellij.pants.jps.incremental.model.PantsBuildTargetType;
+import com.twitter.intellij.pants.jps.incremental.serialization.PantsJpsProjectExtensionSerializer;
 import com.twitter.intellij.pants.util.PantsConstants;
 import com.twitter.intellij.pants.util.PantsOutputMessage;
 import com.twitter.intellij.pants.util.PantsUtil;
-import com.twitter.intellij.pants.jps.incremental.model.JpsPantsModuleExtension;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.jps.ModuleChunk;
+import org.jetbrains.jps.builders.BuildOutputConsumer;
 import org.jetbrains.jps.builders.DirtyFilesHolder;
 import org.jetbrains.jps.builders.java.JavaSourceRootDescriptor;
-import org.jetbrains.jps.incremental.*;
+import org.jetbrains.jps.incremental.CompileContext;
+import org.jetbrains.jps.incremental.ProjectBuildException;
+import org.jetbrains.jps.incremental.TargetBuilder;
 import org.jetbrains.jps.incremental.java.JavaBuilder;
 import org.jetbrains.jps.incremental.messages.BuildMessage;
 import org.jetbrains.jps.incremental.messages.CompilerMessage;
-import org.jetbrains.jps.model.module.JpsModule;
+import org.jetbrains.jps.incremental.messages.ProgressMessage;
+import org.jetbrains.jps.model.JpsProject;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
+import java.util.Collections;
 
-public class PantsBuilder extends ModuleLevelBuilder {
-  private static final Logger LOG = Logger.getInstance("#com.twitter.intellij.pants.jps.incremental.PantsBuilder");
+public class PantsTargetBuilder extends TargetBuilder<JavaSourceRootDescriptor, PantsBuildTarget> {
+  private static final Logger LOG = Logger.getInstance(PantsTargetBuilder.class);
 
-  protected PantsBuilder() {
-    super(BuilderCategory.SOURCE_PROCESSOR);
-  }
-
-  @Override
-  public List<String> getCompilableFileExtensions() {
-    return Arrays.asList("scala", "java");
-  }
-
-  @Override
-  public void buildStarted(CompileContext context) {
-    JavaBuilder.IS_ENABLED.set(context, Boolean.FALSE);
+  public PantsTargetBuilder() {
+    super(Collections.singletonList(PantsBuildTargetType.INSTANCE));
   }
 
   @NotNull
   @Override
   public String getPresentableName() {
-    return PantsConstants.PANTS;
+    return "Pants Compiler";
   }
 
   @Override
-  public ExitCode build(
-    final CompileContext context,
-    ModuleChunk chunk,
-    DirtyFilesHolder<JavaSourceRootDescriptor, ModuleBuildTarget> dirtyFilesHolder,
-    OutputConsumer outputConsumer
-  ) throws ProjectBuildException, IOException {
-    final List<JpsPantsModuleExtension> jpsExtensions =
-      ContainerUtil.mapNotNull(
-        chunk.getModules(),
-        new Function<JpsModule, JpsPantsModuleExtension>() {
-          @Override
-          public JpsPantsModuleExtension fun(JpsModule module) {
-            if (module.getSourceRoots().isEmpty()) {
-              // optimization. no roots - no problems
-              return null;
-            }
-            return PantsJpsModelSerializerExtension.findPantsModuleExtension(module);
-          }
-        }
-      );
-
-    if (jpsExtensions.isEmpty()) {
-      return ExitCode.NOTHING_DONE;
+  public void buildStarted(CompileContext context) {
+    super.buildStarted(context);
+    final JpsProject project = context.getProjectDescriptor().getProject();
+    if (PantsJpsProjectExtensionSerializer.findPantsProjectExtension(project) != null) {
+      // disable only for imported projects
+      JavaBuilder.IS_ENABLED.set(context, Boolean.FALSE);
     }
+  }
 
-    final File pantsExecutable = findPantsExecutable(jpsExtensions);
+  @Override
+  public void build(
+    @NotNull PantsBuildTarget target,
+    @NotNull DirtyFilesHolder<JavaSourceRootDescriptor, PantsBuildTarget> holder,
+    @NotNull BuildOutputConsumer outputConsumer,
+    @NotNull final CompileContext context
+  ) throws ProjectBuildException, IOException {
+    final String targetAbsolutePath = target.getTargetPath();
+    final File pantsExecutable = findPantsExecutable(targetAbsolutePath);
 
     if (pantsExecutable == null) {
       context.processMessage(new CompilerMessage(PantsConstants.PANTS, BuildMessage.Kind.ERROR, "Failed to find Pants executable!"));
-      LOG.error("Failed to find Pants executable for: " + jpsExtensions);
-      return ExitCode.NOTHING_DONE;
+      LOG.error("Failed to find Pants executable for: " + target);
+      return;
     }
 
     final GeneralCommandLine commandLine = PantsUtil.defaultCommandLine(pantsExecutable);
     commandLine.addParameters("goal", "compile", "--no-colors");
-    for (JpsPantsModuleExtension extension : jpsExtensions) {
-      commandLine.addParameter(extension.getTargetAddress());
+    final String targetRelativePath =
+      FileUtil.getRelativePath(pantsExecutable.getParentFile(), new File(targetAbsolutePath));
+    if (target.isAllTargets()) {
+      commandLine.addParameter(targetRelativePath + "::");
+    } else {
+      for (String targetName : target.getTargetNames()) {
+        commandLine.addParameter(targetRelativePath + ":" + targetName);
+      }
     }
 
     final Process process;
@@ -111,10 +101,9 @@ public class PantsBuilder extends ModuleLevelBuilder {
         }
       }
     );
+    context.processMessage(new ProgressMessage("Executing " + commandLine.getCommandLineString("pants")));
     final ProcessOutput processOutput = processHandler.runProcess();
     processOutput.checkSuccess(LOG);
-
-    return ExitCode.OK;
   }
 
   @NotNull
@@ -124,7 +113,8 @@ public class PantsBuilder extends ModuleLevelBuilder {
       return new CompilerMessage(PantsConstants.PANTS, BuildMessage.Kind.INFO, event.getText());
     }
 
-    final BuildMessage.Kind kind = outputType == ProcessOutputTypes.STDERR || message.isError() ? BuildMessage.Kind.ERROR : BuildMessage.Kind.INFO;
+    final BuildMessage.Kind kind =
+      outputType == ProcessOutputTypes.STDERR || message.isError() ? BuildMessage.Kind.ERROR : BuildMessage.Kind.INFO;
     return new CompilerMessage(
       PantsConstants.PANTS,
       kind,
@@ -135,15 +125,7 @@ public class PantsBuilder extends ModuleLevelBuilder {
   }
 
   @Nullable
-  private File findPantsExecutable(List<JpsPantsModuleExtension> extensions) {
-    for (JpsPantsModuleExtension extension : extensions) {
-      final File configFile = new File(extension.getConfigPath());
-      final File executable = PantsUtil.findPantsExecutable(configFile);
-      if (executable != null) {
-        return executable;
-      }
-    }
-
-    return null;
+  private File findPantsExecutable(@NotNull String path) {
+    return PantsUtil.findPantsExecutable(new File(path));
   }
 }

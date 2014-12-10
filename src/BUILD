@@ -5,6 +5,7 @@ java_library(
         '3rdparty/intellij:python-plugin',
         '3rdparty/intellij:scala-plugin',
         'common',
+        'jps-plugin',
         ':pants-intellij-plugin-scala'
     ],
     resources = [
@@ -20,6 +21,7 @@ scala_library(
         '3rdparty/intellij:python-plugin',
         '3rdparty/intellij:scala-plugin',
         'common',
+        'jps-plugin',
     ],
     resources = [
         'resources',

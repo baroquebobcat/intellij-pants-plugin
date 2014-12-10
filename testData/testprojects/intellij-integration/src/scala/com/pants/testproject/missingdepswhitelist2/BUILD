@@ -1,3 +1,3 @@
 scala_library(name='missingdepswhitelist2',
-  sources=rglobs('*.scala'),
+  sources=globs('*.scala'),
 )

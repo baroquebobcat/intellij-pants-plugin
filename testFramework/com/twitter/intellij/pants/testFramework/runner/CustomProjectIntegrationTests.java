@@ -10,7 +10,6 @@ import com.intellij.util.Function;
 import com.intellij.util.containers.ContainerUtil;
 import com.twitter.intellij.pants.testFramework.PantsIntegrationTestCase;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -58,7 +57,6 @@ public class CustomProjectIntegrationTests extends PantsIntegrationTestCase {
     compileProject();
   }
 
-  @Nullable
   @Override
   protected File getProjectFolder() {
     final File projectWorkspaceFolder = new File(projectWorkspace);

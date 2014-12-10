@@ -10,15 +10,14 @@ import com.intellij.util.Function;
 import com.intellij.util.containers.ContainerUtil;
 import com.twitter.intellij.pants.testFramework.PantsIntegrationTestCase;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 @RunWith(Parameterized.class)
 public class CustomProjectIntegrationTests extends PantsIntegrationTestCase {
@@ -31,6 +30,7 @@ public class CustomProjectIntegrationTests extends PantsIntegrationTestCase {
   private String target;
 
   public CustomProjectIntegrationTests(@NotNull String name, @NotNull String target) {
+    super(false);
     this.target = target;
     this.setName(name);
   }
@@ -55,15 +55,14 @@ public class CustomProjectIntegrationTests extends PantsIntegrationTestCase {
     compileProject();
   }
 
+  @Nullable
   @Override
-  protected List<File> getProjectFoldersToCopy() {
+  protected File getProjectFolder() {
     final String projectWorkspace = System.getProperty(CUSTOM_PROJECT_WS);
     assertNotNull(projectWorkspace);
-    ArrayList<File> folders = new ArrayList<File>();
-    File projectWorkspaceFolder = new File(projectWorkspace);
+    final File projectWorkspaceFolder = new File(projectWorkspace);
     assertExists(projectWorkspaceFolder);
-    folders.add(projectWorkspaceFolder);
-    return folders;
+    return projectWorkspaceFolder;
   }
 
   private static Collection<Object[]> getTargetsFromFile(String projectConfigFileName) {

@@ -9,6 +9,6 @@ install: ./scripts/setup-ci-environment.sh
 
 script:
   - ./scripts/run-tests-ci.sh
-  - ./scripts/run-custom-integration.sh -l
+  - ./scripts/run-custom-integration.sh
       -r ../pants
       -t examples/src/scala/com/pants/example/hello,examples/src/java/com/pants/examples/hello

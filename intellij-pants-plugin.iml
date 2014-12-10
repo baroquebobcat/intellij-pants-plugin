@@ -22,6 +22,15 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="library" name="scala-sdk-2.11.2" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="scala-sdk-2.11.2" level="application" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/testData/external-system-test-api-impl.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>

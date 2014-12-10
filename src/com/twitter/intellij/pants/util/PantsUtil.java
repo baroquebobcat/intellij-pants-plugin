@@ -27,6 +27,7 @@ import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.psi.PsiFile;
 import com.intellij.util.Function;
 import com.intellij.util.PathUtil;
+import com.intellij.util.Processor;
 import com.intellij.util.containers.ContainerUtil;
 import com.twitter.intellij.pants.PantsException;
 import com.twitter.intellij.pants.model.PantsSourceType;
@@ -38,10 +39,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 
 public class PantsUtil {
@@ -316,17 +314,16 @@ public class PantsUtil {
 
   @Nullable @NonNls
   public static PantsTargetAddress getTargetAddressFromModule(@NotNull @Nls Module module) {
-    final String moduleName = module.getName();
-    final int index = moduleName.lastIndexOf('_');
-    if (index < 0) {
+    if (!isPantsModule(module)) {
       return null;
     }
-    final String targetName = moduleName.substring(index + 1);
-    final String linkedPantsBUILD = module.getOptionValue(ExternalSystemConstants.LINKED_PROJECT_PATH_KEY);
-    if (linkedPantsBUILD == null) {
-      return null;
-    }
-    return new PantsTargetAddress(PathUtil.getParentPath(linkedPantsBUILD), targetName);
+    final String targetAddress = module.getOptionValue(ExternalSystemConstants.LINKED_PROJECT_ID_KEY);
+    return targetAddress != null ? PantsTargetAddress.fromString(targetAddress) : null;
+  }
+
+  public static boolean isPantsModule(@NotNull @Nls Module module) {
+    final String systemId = module.getOptionValue(ExternalSystemConstants.EXTERNAL_SYSTEM_ID_KEY);
+    return StringUtil.equals(systemId, PantsConstants.SYSTEM_ID.getId());
   }
 
   @NotNull
@@ -396,5 +393,25 @@ public class PantsUtil {
       specBuilder.use(ProgressExecutionMode.MODAL_SYNC);
     }
     ExternalSystemUtil.refreshProjects(specBuilder);
+  }
+
+  /**
+   * {@code processor} should return false if we don't want to step into the file.
+   */
+  public static void traverseFilesRecursively(@NotNull File root, @NotNull Processor<File> processor) {
+    final LinkedList<File> queue = new LinkedList<File>();
+    queue.add(root);
+    while (!queue.isEmpty()) {
+      final File file = queue.removeFirst();
+
+      if (!processor.process(file)) {
+        continue;
+      }
+
+      final File[] children = file.listFiles();
+      if (children != null) {
+        ContainerUtil.addAll(queue, children);
+      }
+    }
   }
 }

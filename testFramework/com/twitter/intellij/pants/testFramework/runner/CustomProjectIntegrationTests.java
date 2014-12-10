@@ -30,7 +30,7 @@ public class CustomProjectIntegrationTests extends PantsIntegrationTestCase {
   private String target;
 
   public CustomProjectIntegrationTests(@NotNull String name, @NotNull String target) {
-    super(false);
+    super();
     this.target = target;
     this.setName(name);
   }

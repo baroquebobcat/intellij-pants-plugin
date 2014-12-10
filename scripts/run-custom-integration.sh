@@ -13,7 +13,8 @@ function usage() {
   echo " -f        file containing list of targets"
   echo " -t        comma separated list of targets"
   if (( $# > 0 )); then
-    die "$@"
+    echo "$@"
+    exit -1
   else
     exit 0
   fi

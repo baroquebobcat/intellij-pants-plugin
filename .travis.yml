@@ -3,6 +3,7 @@ jdk:
 - oraclejdk7
 notifications:
   email:
+    - fkorotkov@twitter.com
     - tdesai@twitter.com
 install: ./scripts/setup-ci-environment.sh
 

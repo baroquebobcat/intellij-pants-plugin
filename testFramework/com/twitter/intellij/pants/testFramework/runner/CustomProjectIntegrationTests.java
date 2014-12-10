@@ -28,11 +28,14 @@ public class CustomProjectIntegrationTests extends PantsIntegrationTestCase {
 
   @org.junit.runners.Parameterized.Parameter()
   private String target;
+  private String projectWorkspace;
 
   public CustomProjectIntegrationTests(@NotNull String name, @NotNull String target) {
     super();
     this.target = target;
     this.setName(name);
+    projectWorkspace = System.getProperty(CUSTOM_PROJECT_WS);
+    assertNotNull(projectWorkspace);
   }
 
   @Parameterized.Parameters(name = "{0}")
@@ -58,8 +61,6 @@ public class CustomProjectIntegrationTests extends PantsIntegrationTestCase {
   @Nullable
   @Override
   protected File getProjectFolder() {
-    final String projectWorkspace = System.getProperty(CUSTOM_PROJECT_WS);
-    assertNotNull(projectWorkspace);
     final File projectWorkspaceFolder = new File(projectWorkspace);
     assertExists(projectWorkspaceFolder);
     return projectWorkspaceFolder;

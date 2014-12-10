@@ -146,7 +146,7 @@ public abstract class PantsIntegrationTestCase extends ExternalSystemImportingTe
   }
 
   protected void compileProject() {
-    Module[] modules = ModuleManager.getInstance(myProject).getModules();
+    final Module[] modules = ModuleManager.getInstance(myProject).getModules();
     List<String> moduleNamesList = ContainerUtil.map(
       modules, new Function<Module, String>() {
         @Override

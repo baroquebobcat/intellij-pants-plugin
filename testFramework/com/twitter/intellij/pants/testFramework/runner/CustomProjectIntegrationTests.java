@@ -36,15 +36,16 @@ public class CustomProjectIntegrationTests extends PantsIntegrationTestCase {
   }
 
   @Parameterized.Parameters(name = "{0}")
-  public static Collection<Object[]> getProjectList(){
-    String projectConfigFileName = System.getProperty(CUSTOM_TARGET_LIST_FILE);
-    String targets = System.getProperty(CUSTOM_TARGETS);
-    assertTrue("Only on of project.targets or project.target.list.file can be supplied",
-               projectConfigFileName == null || targets == null);
+  public static Collection<Object[]> getProjectList() {
+    final String projectConfigFileName = System.getProperty(CUSTOM_TARGET_LIST_FILE);
     if(projectConfigFileName != null) {
       return getTargetsFromFile(projectConfigFileName);
     }
-   return getTargetFromCmdLine(targets);
+    final String targets = System.getProperty(CUSTOM_TARGETS);
+    assertNotNull("Please provide either '" + CUSTOM_TARGET_LIST_FILE + "' or '"
+                  + CUSTOM_TARGETS + "'",
+                  targets);
+    return getTargetFromCmdLine(targets);
   }
 
   @Test
@@ -66,31 +67,28 @@ public class CustomProjectIntegrationTests extends PantsIntegrationTestCase {
   }
 
   private static Collection<Object[]> getTargetsFromFile(String projectConfigFileName) {
-    File projectConfigFile = new File(projectConfigFileName);
+    final File projectConfigFile = new File(projectConfigFileName);
     assertExists(projectConfigFile);
     try{
       final String[] testProjectList = StringUtil.splitByLines(FileUtil.loadFile(projectConfigFile));
-      return ContainerUtil.map(
-        testProjectList, new Function<String, Object[]>() {
-          @Override
-          public Object[] fun(String file) {
-            return new Object[]{file, file};
-          }
-        }
-      );
+      return getTargets(testProjectList);
     } catch (IOException e) {
-      assertTrue("File not found", false);
+      fail("Exception loading file " + projectConfigFileName + " due to " + e.getMessage());
     }
     return null;
   }
 
   private static Collection<Object[]> getTargetFromCmdLine(String targets) {
-    assertNotNull(targets);
+    return getTargets(targets.split(","));
+  }
+
+  private static Collection<Object[]> getTargets(String[] targets) {
+    assertNotNull("No targets specified", targets);
     return ContainerUtil.map(
-      targets.split(","), new Function<String, Object[]>() {
+      targets, new Function<String, Object[]>() {
         @Override
-        public Object[] fun(String target) {
-          return new Object[]{target, target};
+        public Object[] fun(String targetAddress) {
+          return new Object[]{targetAddress, targetAddress};
         }
       }
     );

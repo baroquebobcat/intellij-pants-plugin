@@ -43,3 +43,10 @@ if [ ! -d .pants.d/intellij/pants ]; then
   git clone https://github.com/pantsbuild/pants
   popd
 fi
+
+prepare_ci_env()
+  CWD=$(pwd)
+  export INTELLIJ_PLUGINS_HOME="$CWD/.pants.d/intellij/plugins"
+  export OSS_PANTS_HOME="$CWD/.pants.d/intellij/pants"
+  export INTELLIJ_HOME="$CWD/.pants.d/intellij/ideaIC"
+}

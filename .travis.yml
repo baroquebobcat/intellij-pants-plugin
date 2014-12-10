@@ -6,6 +6,8 @@ notifications:
     - tdesai@twitter.com
 install: ./scripts/setup-ci-environment.sh
 
+env:
+  OSS_PANTS_HOME=./.pants.d/intellij/pants
 script:
   - ./scripts/run-tests-ci.sh
   - ./scripts/run-custom-integration.sh

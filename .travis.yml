@@ -8,6 +8,6 @@ notifications:
 install: ./scripts/setup-ci-environment.sh
 
 script: ./scripts/run-tests-ci.sh
-script: ./scripts/run-custom-integration.sh -l \
-        -r ../pants \
+        ./scripts/run-custom-integration.sh -l
+        -r ../pants
         -t examples/src/scala/com/pants/example/hello,examples/src/java/com/pants/examples/hello

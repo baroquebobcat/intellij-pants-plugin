@@ -47,12 +47,11 @@ if [ ! -z "$target_list_file" ]; then
   targets_list_args="$target_list_file"
 fi
 
-if [[ "${local_run:-true}" == "true" ]]; then
+if [ "$local_run" == "true" ]; then
   prepare_local_env
 else
   prepare_ci_env
 fi
-
 
 CWD=$(pwd)
 ./pants goal test testFramework/com/twitter/intellij/pants/testFramework/runner \

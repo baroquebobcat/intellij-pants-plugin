@@ -5,7 +5,7 @@ notifications:
   email:
     - fkorotkov@twitter.com
     - tdesai@twitter.com
-install: ./scripts/prepare-ci-environment.sh
+install: ./scripts/setup-ci-environment.sh
 
 script: ./scripts/run-tests-ci.sh
 script: ./scripts/run-custom-integration.sh -l \

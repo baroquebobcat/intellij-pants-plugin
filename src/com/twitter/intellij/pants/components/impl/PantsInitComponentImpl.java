@@ -35,7 +35,7 @@ public class PantsInitComponentImpl implements PantsInitComponent {
 
     // hack to trick BuildProcessClasspathManager
     final String basePath = System.getProperty("pants.plugin.base.path");
-    final IdeaPluginDescriptor plugin = PluginManager.getPlugin(PluginId.getId("com.intellij.plugins.pants"));
+    final IdeaPluginDescriptor plugin = PluginManager.getPlugin(PluginId.getId(PantsConstants.PLUGIN_ID));
     if (StringUtil.isNotEmpty(basePath) && plugin instanceof IdeaPluginDescriptorImpl) {
       ((IdeaPluginDescriptorImpl)plugin).setPath(new File(basePath));
     }

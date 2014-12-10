@@ -24,7 +24,7 @@ public class PantsJpsModelSerializerExtension extends JpsModelSerializerExtensio
   @NonNls @NotNull public static final String LINKED_PROJECT_PATH_KEY = "external.linked.project.path";
 
   @Nullable
-  public static JpsPantsModuleExtension findPantsModuleExtension(JpsModule module) {
+  public static JpsPantsModuleExtension findPantsModuleExtension(@NotNull JpsModule module) {
     return module.getContainer().getChild(JpsPantsModuleExtension.ROLE);
   }
 

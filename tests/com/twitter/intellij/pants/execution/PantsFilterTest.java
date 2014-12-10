@@ -25,42 +25,42 @@ public class PantsFilterTest extends TestCase {
   }
 
   public void testBadMessage() {
-    PantsOutputMessage info = PantsOutputMessage.parse("bla bla bla", true, false);
+    PantsOutputMessage info = PantsOutputMessage.parseMessage("bla bla bla", true, false);
     assertNull(info);
   }
 
   public void testUrl() {
-    PantsOutputMessage info = PantsOutputMessage.parse("/this/is/a/url");
+    PantsOutputMessage info = PantsOutputMessage.parseOutputMessage("/this/is/a/url");
     doTest(new PantsOutputMessage(0, 14, "/this/is/a/url", 0), info);
   }
 
   public void testUrlWithSpaces() {
-    PantsOutputMessage info = PantsOutputMessage.parse("     /this/is/a/url");
+    PantsOutputMessage info = PantsOutputMessage.parseOutputMessage("     /this/is/a/url");
     doTest(new PantsOutputMessage(5, 19, "/this/is/a/url", 0), info);
   }
 
   public void testUrlWithLineNumber() {
-    PantsOutputMessage info = PantsOutputMessage.parse("/this/is/a/url:23");
+    PantsOutputMessage info = PantsOutputMessage.parseOutputMessage("/this/is/a/url:23");
     doTest(new PantsOutputMessage(0, 17, "/this/is/a/url", 22), info);
   }
 
   public void testUrlWithLineNumberAndMessage() {
-    PantsOutputMessage info = PantsOutputMessage.parse("/this/is/a/url:23: error: ...");
+    PantsOutputMessage info = PantsOutputMessage.parseOutputMessage("/this/is/a/url:23: error: ...");
     doTest(new PantsOutputMessage(0, 17, "/this/is/a/url", 22), info);
   }
 
   public void testUrlWithSpaceAndNumberAndMessage() {
-    PantsOutputMessage info = PantsOutputMessage.parse("     /this/is/a/url:23: message ...");
+    PantsOutputMessage info = PantsOutputMessage.parseOutputMessage("     /this/is/a/url:23: message ...");
     doTest(new PantsOutputMessage(5, 22, "/this/is/a/url", 22), info);
   }
 
   public void testUrlWithTabsAndNumberAndMessage() {
-    PantsOutputMessage info = PantsOutputMessage.parse("\t/this/is/a/url:23: message ...");
+    PantsOutputMessage info = PantsOutputMessage.parseOutputMessage("\t/this/is/a/url:23: message ...");
     doTest(new PantsOutputMessage(1, 18, "/this/is/a/url", 22), info);
   }
 
   public void testUrlWithErrorInBrackets() {
-    PantsOutputMessage info = PantsOutputMessage.parse("     [error] /this/is/a/url");
+    PantsOutputMessage info = PantsOutputMessage.parseOutputMessage("     [error] /this/is/a/url");
     doTest(new PantsOutputMessage(13, 27, "/this/is/a/url", 0), info);
   }
 

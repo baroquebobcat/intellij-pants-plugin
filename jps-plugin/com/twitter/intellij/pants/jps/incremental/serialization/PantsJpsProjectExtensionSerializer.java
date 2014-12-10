@@ -26,7 +26,7 @@ public class PantsJpsProjectExtensionSerializer extends JpsProjectExtensionSeria
   private static final String PantsProjectSettings = "PantsProjectSettings";
 
   @Nullable
-  public static JpsPantsProjectExtension findPantsProjectExtension(JpsProject project) {
+  public static JpsPantsProjectExtension findPantsProjectExtension(@NotNull JpsProject project) {
     return project.getContainer().getChild(JpsPantsProjectExtension.ROLE);
   }
 

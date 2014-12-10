@@ -9,6 +9,8 @@ import org.jetbrains.annotations.NotNull;
 
 public class PantsConstants {
   public static final String PANTS = "pants";
+  public static final String PLUGIN_ID = "com.intellij.plugins.pants";
+
   @NotNull
   public static final ProjectSystemId SYSTEM_ID = new ProjectSystemId(PANTS);
   public static final String PANTS_PROJECT_MODULE_SUFFIX = "_module";

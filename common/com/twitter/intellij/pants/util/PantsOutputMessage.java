@@ -58,12 +58,17 @@ public class PantsOutputMessage {
   }
 
   @Nullable
-  public static PantsOutputMessage parse(@NotNull String line) {
-    return parse(line, false, false);
+  public static PantsOutputMessage parseOutputMessage(@NotNull String message) {
+    return parseMessage(message, false, false);
   }
 
+  /**
+   * @param line of an output
+   * @param onlyCompilerMessages will look only for compiler specific message e.g. with a log level
+   * @param checkFileExistence will check if the parsed {@code myFilePath} exists
+   */
   @Nullable
-  public static PantsOutputMessage parse(@NotNull String line, boolean onlyCompilerMessages, boolean checkFileExistence) {
+  public static PantsOutputMessage parseMessage(@NotNull String line, boolean onlyCompilerMessages, boolean checkFileExistence) {
     int i = 0;
     final boolean isError = line.contains("[error]");
     if (isError || line.contains("[warning]") || line.contains("[debug]")) {

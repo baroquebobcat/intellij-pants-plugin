@@ -105,7 +105,7 @@ public class TargetInfo {
     return StringUtil.equals("scala_library", getInternalPantsTargetType());
   }
 
-  public boolean isAnnotationProcessotTarget() {
+  public boolean isAnnotationProcessorTarget() {
     return StringUtil.equals("annotation_processor", getInternalPantsTargetType());
   }
 

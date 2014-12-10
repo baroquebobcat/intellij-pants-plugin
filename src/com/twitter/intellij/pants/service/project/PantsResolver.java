@@ -164,7 +164,7 @@ public class PantsResolver {
         String compilerOutputRelativePath = ".pants.d/compile/jvm/java/classes";
         if (targetInfo.isScalaTarget() || targetInfo.hasScalaLib()) {
           compilerOutputRelativePath = ".pants.d/compile/jvm/scala/classes";
-        } else if (targetInfo.isAnnotationProcessotTarget()) {
+        } else if (targetInfo.isAnnotationProcessorTarget()) {
           compilerOutputRelativePath = ".pants.d/compile/jvm/apt/classes";
         }
         final String absoluteCompilerOutputPath = new File(myWorkDirectory, compilerOutputRelativePath).getPath();

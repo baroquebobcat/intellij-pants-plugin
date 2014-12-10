@@ -21,7 +21,7 @@ public class PantsFilter implements Filter {
   @Nullable
   @Override
   public Result applyFilter(final String text, int entireLength) {
-    PantsOutputMessage info = PantsOutputMessage.parse(text);
+    PantsOutputMessage info = PantsOutputMessage.parseOutputMessage(text);
     if (info == null || ".".equals(info.getFilePath())) {
       return null;
     }

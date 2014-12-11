@@ -7,13 +7,15 @@ notifications:
     - fkorotkov@twitter.com
     - tdesai@twitter.com
 
-matrix:
-  env:
+install: ./scripts/download-ci-environment.sh
+
+env:
+  global:
+    - OSS_PANTS_HOME=./.pants.d/intellij/pants
+  matrix:
     - IJ_VERSION="14" IJ_BUILD="IC-139.223"
     - IJ_VERSION="14.0.2" IJ_BUILD="IC-139.659"
 
-install: ./scripts/download-ci-environment.sh
-env: OSS_PANTS_HOME=./.pants.d/intellij/pants
 script:
   - ./scripts/run-tests-ci.sh
   - ./scripts/run-custom-integration.sh

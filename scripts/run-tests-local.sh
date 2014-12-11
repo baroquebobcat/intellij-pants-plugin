@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
-source scripts/prepare-local-environment.sh
-
-prepare_local_env
+export INTELLIJ_PLUGINS_HOME="$HOME/Library/Application Support/IdeaIC14/"
+export INTELLIJ_HOME="/Applications/IntelliJ IDEA 14 CE.app/Contents/"
 
 ./scripts/run-tests.sh $@

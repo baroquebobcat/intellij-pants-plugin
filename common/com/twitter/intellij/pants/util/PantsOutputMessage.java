@@ -13,18 +13,18 @@ public class PantsOutputMessage {
   private final int myEnd;
   private final int myLineNumber;
   private final String myFilePath;
-  private final boolean myError;
+  private final Level myLevel;
 
   public PantsOutputMessage(int start, int end, String filePath, int lineNumber) {
-    this(start, end, filePath, lineNumber, false);
+    this(start, end, filePath, lineNumber, Level.INFO);
   }
 
-  public PantsOutputMessage(int start, int end, String filePath, int lineNumber, boolean isError) {
+  public PantsOutputMessage(int start, int end, String filePath, int lineNumber, Level level) {
     myStart = start;
     myEnd = end;
     myFilePath = filePath;
     myLineNumber = lineNumber;
-    myError = isError;
+    myLevel = level;
   }
 
   public int getStart() {
@@ -39,12 +39,14 @@ public class PantsOutputMessage {
     return myLineNumber;
   }
 
+  @NotNull
   public String getFilePath() {
     return myFilePath;
   }
 
-  public boolean isError() {
-    return myError;
+  @NotNull
+  public Level getLevel() {
+    return myLevel;
   }
 
   @Override
@@ -62,6 +64,11 @@ public class PantsOutputMessage {
     return parseMessage(message, false, false);
   }
 
+  @Nullable
+  public static PantsOutputMessage parseCompilerMessage(@NotNull String message) {
+    return parseMessage(message, true, true);
+  }
+
   /**
    * @param line of an output
    * @param onlyCompilerMessages will look only for compiler specific message e.g. with a log level
@@ -71,7 +78,8 @@ public class PantsOutputMessage {
   public static PantsOutputMessage parseMessage(@NotNull String line, boolean onlyCompilerMessages, boolean checkFileExistence) {
     int i = 0;
     final boolean isError = line.contains("[error]");
-    if (isError || line.contains("[warning]") || line.contains("[debug]")) {
+    final boolean isWarning = line.contains("[warning]") || line.contains("[warn]");
+    if (isError || isWarning || line.contains("[debug]")) {
       i = line.indexOf(']') + 1;
     } else if (onlyCompilerMessages) {
       return null;
@@ -99,6 +107,11 @@ public class PantsOutputMessage {
     }
     catch (Exception ignored) {
     }
-    return new PantsOutputMessage(start, end, filePath, lineNumber, isError);
+    final Level level = isError ? Level.ERROR : isWarning ? Level.WARNING : Level.INFO;
+    return new PantsOutputMessage(start, end, filePath, lineNumber, level);
+  }
+
+  public static enum Level {
+    ERROR, WARNING, INFO
   }
 }

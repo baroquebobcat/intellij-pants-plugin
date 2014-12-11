@@ -7,7 +7,7 @@
   <description>Support for Pants build system</description>
   <change-notes>
     <![CDATA[
-      <p>1.0.3:</p>
+      <p>1.1:</p>
       <ul>
         <li>Compilation via compile goal</li>
       </ul>
@@ -66,7 +66,7 @@
       </ul>
       ]]>
   </change-notes>
-  <version>1.0.3</version>
+  <version>1.1</version>
   <vendor>Twitter, Inc.</vendor>
   <idea-version since-build="139.650" until-build="139.*"/>
 

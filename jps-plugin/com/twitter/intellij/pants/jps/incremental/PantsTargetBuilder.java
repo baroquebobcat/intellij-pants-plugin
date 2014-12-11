@@ -19,6 +19,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.jps.builders.BuildOutputConsumer;
 import org.jetbrains.jps.builders.DirtyFilesHolder;
+import org.jetbrains.jps.builders.java.JavaBuilderUtil;
 import org.jetbrains.jps.builders.java.JavaSourceRootDescriptor;
 import org.jetbrains.jps.incremental.CompileContext;
 import org.jetbrains.jps.incremental.ProjectBuildException;
@@ -73,7 +74,11 @@ public class PantsTargetBuilder extends TargetBuilder<JavaSourceRootDescriptor, 
     }
 
     final GeneralCommandLine commandLine = PantsUtil.defaultCommandLine(pantsExecutable);
-    commandLine.addParameters("goal", "compile", "--no-colors");
+    commandLine.addParameters("goal");
+    if (JavaBuilderUtil.isForcedRecompilationAllJavaModules(context)) {
+      commandLine.addParameter("clean-all");
+    }
+    commandLine.addParameters("compile");
     final String targetRelativePath =
       FileUtil.getRelativePath(pantsExecutable.getParentFile(), new File(targetAbsolutePath));
     if (target.isAllTargets()) {
@@ -84,8 +89,11 @@ public class PantsTargetBuilder extends TargetBuilder<JavaSourceRootDescriptor, 
       }
     }
 
+    context.processMessage(new ProgressMessage(commandLine.getCommandLineString("pants")));
+
     final Process process;
     try {
+      commandLine.addParameters("--no-color");
       process = commandLine.createProcess();
     }
     catch (ExecutionException e) {
@@ -101,26 +109,27 @@ public class PantsTargetBuilder extends TargetBuilder<JavaSourceRootDescriptor, 
         }
       }
     );
-    context.processMessage(new ProgressMessage("Executing " + commandLine.getCommandLineString("pants")));
     final ProcessOutput processOutput = processHandler.runProcess();
     processOutput.checkSuccess(LOG);
   }
 
   @NotNull
   public CompilerMessage getCompilerMessage(ProcessEvent event, Key outputType) {
-    final PantsOutputMessage message = PantsOutputMessage.parseMessage(event.getText(), false, true);
+    final PantsOutputMessage message = PantsOutputMessage.parseCompilerMessage(event.getText());
     if (message == null) {
       return new CompilerMessage(PantsConstants.PANTS, BuildMessage.Kind.INFO, event.getText());
     }
 
+    final boolean isError = outputType == ProcessOutputTypes.STDERR || message.getLevel() == PantsOutputMessage.Level.ERROR;
+    final boolean isWarning = message.getLevel() == PantsOutputMessage.Level.WARNING;
     final BuildMessage.Kind kind =
-      outputType == ProcessOutputTypes.STDERR || message.isError() ? BuildMessage.Kind.ERROR : BuildMessage.Kind.INFO;
+      isError ? BuildMessage.Kind.ERROR : isWarning ? BuildMessage.Kind.WARNING : BuildMessage.Kind.INFO;
     return new CompilerMessage(
       PantsConstants.PANTS,
       kind,
       event.getText().substring(message.getEnd()),
       message.getFilePath(),
-      -1L, -1L, -1L, message.getLineNumber(), -1L
+      -1L, -1L, -1L, message.getLineNumber() + 1, -1L
     );
   }
 

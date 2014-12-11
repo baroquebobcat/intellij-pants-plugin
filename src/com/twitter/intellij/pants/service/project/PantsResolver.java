@@ -171,10 +171,6 @@ public class PantsResolver {
         final ModuleData moduleData = moduleDataNode.getData();
         moduleData.setInheritProjectCompileOutputPath(false);
         moduleData.setCompileOutputPath(ExternalSystemSourceType.SOURCE, absoluteCompilerOutputPath);
-        if (!ApplicationManager.getApplication().isUnitTestMode()) {
-          // todo(fkorotkov): remove once ServerMediator#checkCompilationSettings won't show a dialog in tests
-          moduleData.setCompileOutputPath(ExternalSystemSourceType.TEST, absoluteCompilerOutputPath);
-        }
       }
     }
   }

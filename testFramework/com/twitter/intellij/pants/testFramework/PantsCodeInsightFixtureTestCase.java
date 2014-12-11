@@ -17,7 +17,6 @@ import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
 import com.twitter.intellij.pants.inspections.PantsLibNotConfiguredInspection;
 import com.twitter.intellij.pants.inspections.PantsLibNotFoundInspection;
 import com.twitter.intellij.pants.util.PantsConstants;
-import com.twitter.intellij.pants.util.PantsTestUtils;
 import com.twitter.intellij.pants.util.PantsUtil;
 
 abstract public class PantsCodeInsightFixtureTestCase extends LightCodeInsightFixtureTestCase {

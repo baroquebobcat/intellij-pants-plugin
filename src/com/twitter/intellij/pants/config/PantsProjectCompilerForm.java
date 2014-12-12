@@ -41,6 +41,10 @@ public class PantsProjectCompilerForm {
     return myMainPanel;
   }
 
+  public JComboBox<CompilerValue> getCompilerComboBox() {
+    return myCompilerComboBox;
+  }
+
   public boolean isCompileWithIntellij() {
     return myCompilerComboBox.getSelectedItem() == myIJCompiler;
   }
@@ -53,7 +57,7 @@ public class PantsProjectCompilerForm {
     }
   }
 
-  private static class CompilerValue {
+  public static class CompilerValue {
     private String myName;
     private String myDescription;
 

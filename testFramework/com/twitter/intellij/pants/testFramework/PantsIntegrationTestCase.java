@@ -196,7 +196,7 @@ public abstract class PantsIntegrationTestCase extends ExternalSystemImportingTe
   }
 
   protected void assertCompilationFailed(final String... moduleNames) throws Exception {
-    for (CompilerMessage message : compileAndGetMessages(false, getModules(moduleNames))) {
+    for (CompilerMessage message : compileAndGetMessages(getModules(moduleNames))) {
       if (message.getCategory() == CompilerMessageCategory.ERROR) {
         return;
       }
@@ -209,16 +209,16 @@ public abstract class PantsIntegrationTestCase extends ExternalSystemImportingTe
    * because we want to do some assertions on myCompilerTester
    */
   protected void makeModules(final String... moduleNames) throws Exception {
-    compile(false, getModules(moduleNames));
+    compile(getModules(moduleNames));
   }
 
-  protected void rebuildProject() throws Exception {
+  protected void makeProject() throws Exception {
     final Module[] modules = ModuleManager.getInstance(myProject).getModules();
-    compile(true, modules);
+    compile(modules);
   }
 
-  protected void compile(boolean rebuild, Module... modules) throws Exception {
-    final List<CompilerMessage> messages = compileAndGetMessages(rebuild, modules);
+  protected void compile(Module... modules) throws Exception {
+    final List<CompilerMessage> messages = compileAndGetMessages(modules);
     for (CompilerMessage message : messages) {
       final VirtualFile virtualFile = message.getVirtualFile();
       final String prettyMessage =
@@ -242,10 +242,10 @@ public abstract class PantsIntegrationTestCase extends ExternalSystemImportingTe
     }
   }
 
-  private List<CompilerMessage> compileAndGetMessages(boolean rebuild, Module... modules) throws Exception {
+  private List<CompilerMessage> compileAndGetMessages(Module... modules) throws Exception {
     final ModuleCompileScope scope = new ModuleCompileScope(myProject, modules, true);
     myCompilerTester = new CompilerTester(myProject, Arrays.asList(scope.getAffectedModules()));
-    return rebuild ? myCompilerTester.rebuild() : myCompilerTester.make(scope);
+    return myCompilerTester.make(scope);
   }
 
   private Module[] getModules(final String... moduleNames) {

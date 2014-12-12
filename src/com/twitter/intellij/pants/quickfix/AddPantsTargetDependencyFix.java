@@ -113,6 +113,6 @@ public class AddPantsTargetDependencyFix extends PantsQuickFix {
       CodeStyleManager.getInstance(project).reformat(dependenciesArgument);
     }
     FileDocumentManager.getInstance().saveAllDocuments(); // dump VFS to FS before refreshing
-    PantsUtil.refreshAllProjects(project, false);
+    PantsUtil.refreshAllProjects(project);
   }
 }

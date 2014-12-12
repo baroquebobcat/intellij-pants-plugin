@@ -37,13 +37,13 @@ public class PantsUnresolvedScalaReferenceQuickFixProviderTest extends PantsHigh
 
     assertModuleModuleDeps("intellij-integration_src_scala_com_pants_testproject_missingdepswhitelist2_missingdepswhitelist2");
 
-    PantsSettings.getInstance(myProject).setCompileWithIntellij(true);
-    assertCompilationFailed("intellij-integration_src_scala_com_pants_testproject_missingdepswhitelist2_missingdepswhitelist2");
-
-    // we should also be able to compile it even with a missing dependency
-    // because we are compiling via compile goal
-    PantsSettings.getInstance(myProject).setCompileWithIntellij(false);
-    rebuildProject();
+    if (PantsSettings.getInstance(myProject).isCompileWithIntellij()) {
+      assertCompilationFailed("intellij-integration_src_scala_com_pants_testproject_missingdepswhitelist2_missingdepswhitelist2");
+    } else {
+      // we should be able to compile it even with a missing dependency
+      // because we are compiling via compile goal
+      makeModules("intellij-integration_src_scala_com_pants_testproject_missingdepswhitelist2_missingdepswhitelist2");
+    }
 
     WriteCommandAction.Simple.runWriteCommandAction(
       myProject,
@@ -60,9 +60,6 @@ public class PantsUnresolvedScalaReferenceQuickFixProviderTest extends PantsHigh
       "testprojects_src_java_com_pants_testproject_publish_hello_greet_greet"
     );
 
-    PantsSettings.getInstance(myProject).setCompileWithIntellij(true);
-    rebuildProject();
-    PantsSettings.getInstance(myProject).setCompileWithIntellij(false);
-    rebuildProject();
+    makeProject();
   }
 }

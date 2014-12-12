@@ -54,7 +54,7 @@ public class CustomProjectIntegrationTests extends PantsIntegrationTestCase {
   public void testProject() throws Exception {
     assertNotNull(target);
     doImport(target);
-    rebuildProject();
+    makeProject();
   }
 
   @Override

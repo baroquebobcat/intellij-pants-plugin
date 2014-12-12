@@ -10,6 +10,7 @@ import com.intellij.openapi.project.Project;
 import com.twitter.intellij.pants.PantsBundle;
 import com.twitter.intellij.pants.settings.PantsSettings;
 import com.twitter.intellij.pants.util.PantsConstants;
+import com.twitter.intellij.pants.util.PantsUtil;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -62,7 +63,12 @@ public class PantsProjectCompilerConfigurable extends BaseConfigurable implement
 
   @Override
   public void apply() throws ConfigurationException {
-    PantsSettings.getInstance(myProject).setCompileWithIntellij(myCompilerForm.isCompileWithIntellij());
+    final PantsSettings pantsSettings = PantsSettings.getInstance(myProject);
+    final boolean refreshNeeded = pantsSettings.isCompileWithIntellij() != myCompilerForm.isCompileWithIntellij();
+    pantsSettings.setCompileWithIntellij(myCompilerForm.isCompileWithIntellij());
+    if (refreshNeeded) {
+      PantsUtil.refreshAllProjects(myProject);
+    }
   }
 
   @Override
@@ -72,5 +78,10 @@ public class PantsProjectCompilerConfigurable extends BaseConfigurable implement
 
   @Override
   public void disposeUIResources() {
+  }
+
+  @Override
+  public JComponent getPreferredFocusedComponent() {
+    return myCompilerForm.getCompilerComboBox();
   }
 }

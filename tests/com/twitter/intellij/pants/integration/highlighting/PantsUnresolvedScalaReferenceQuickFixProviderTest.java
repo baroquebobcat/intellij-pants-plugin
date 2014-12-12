@@ -9,6 +9,7 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.psi.PsiClass;
 import com.intellij.util.ArrayUtil;
 import com.twitter.intellij.pants.quickfix.AddPantsTargetDependencyFix;
+import com.twitter.intellij.pants.settings.PantsSettings;
 
 public class PantsUnresolvedScalaReferenceQuickFixProviderTest extends PantsHighlightingIntegrationTest {
   @Override
@@ -36,9 +37,13 @@ public class PantsUnresolvedScalaReferenceQuickFixProviderTest extends PantsHigh
 
     assertModuleModuleDeps("intellij-integration_src_scala_com_pants_testproject_missingdepswhitelist2_missingdepswhitelist2");
 
+    PantsSettings.getInstance(myProject).setCompileWithIntellij(true);
+    assertCompilationFailed("intellij-integration_src_scala_com_pants_testproject_missingdepswhitelist2_missingdepswhitelist2");
+
     // we should also be able to compile it even with a missing dependency
     // because we are compiling via compile goal
-    makeModules("intellij-integration_src_scala_com_pants_testproject_missingdepswhitelist2_missingdepswhitelist2");
+    PantsSettings.getInstance(myProject).setCompileWithIntellij(false);
+    rebuildProject();
 
     WriteCommandAction.Simple.runWriteCommandAction(
       myProject,
@@ -55,6 +60,9 @@ public class PantsUnresolvedScalaReferenceQuickFixProviderTest extends PantsHigh
       "testprojects_src_java_com_pants_testproject_publish_hello_greet_greet"
     );
 
-    makeModules("intellij-integration_src_scala_com_pants_testproject_missingdepswhitelist2_missingdepswhitelist2");
+    PantsSettings.getInstance(myProject).setCompileWithIntellij(true);
+    rebuildProject();
+    PantsSettings.getInstance(myProject).setCompileWithIntellij(false);
+    rebuildProject();
   }
 }

@@ -3,6 +3,7 @@
 
 package com.twitter.intellij.pants.settings;
 
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.*;
 import com.intellij.openapi.externalSystem.settings.AbstractExternalSystemSettings;
 import com.intellij.openapi.externalSystem.settings.ExternalSystemSettingsListener;
@@ -37,7 +38,7 @@ public class PantsSettings extends AbstractExternalSystemSettings<PantsSettings,
 
   public void setCompileWithIntellij(boolean compileWithIntellij) {
     if (myCompileWithIntellij != compileWithIntellij) {
-      PantsUtil.refreshAllProjects(getProject(), true);
+      PantsUtil.refreshAllProjects(getProject(), !ApplicationManager.getApplication().isUnitTestMode());
     }
     myCompileWithIntellij = compileWithIntellij;
   }

@@ -402,10 +402,10 @@ public class PantsUtil {
     return FileUtil.getRelativePath(workDirectory, projectFile.isDirectory() ? projectFile : projectFile.getParentFile());
   }
 
-  public static void refreshAllProjects(Project project) {
+  public static void refreshAllProjects(@NotNull Project project, boolean async) {
     final ImportSpecBuilder specBuilder = new ImportSpecBuilder(project, PantsConstants.SYSTEM_ID);
     if (ApplicationManager.getApplication().isUnitTestMode()) {
-      specBuilder.use(ProgressExecutionMode.MODAL_SYNC);
+      specBuilder.use(async ? ProgressExecutionMode.IN_BACKGROUND_ASYNC : ProgressExecutionMode.MODAL_SYNC);
     }
     ExternalSystemUtil.refreshProjects(specBuilder);
   }

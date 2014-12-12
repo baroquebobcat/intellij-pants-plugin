@@ -9,6 +9,7 @@ import com.intellij.openapi.externalSystem.settings.ExternalSystemSettingsListen
 import com.intellij.openapi.project.Project;
 import com.intellij.util.containers.ContainerUtilRt;
 import com.intellij.util.xmlb.annotations.AbstractCollection;
+import com.twitter.intellij.pants.util.PantsUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,6 +36,9 @@ public class PantsSettings extends AbstractExternalSystemSettings<PantsSettings,
   }
 
   public void setCompileWithIntellij(boolean compileWithIntellij) {
+    if (myCompileWithIntellij != compileWithIntellij) {
+      PantsUtil.refreshAllProjects(getProject(), true);
+    }
     myCompileWithIntellij = compileWithIntellij;
   }
 

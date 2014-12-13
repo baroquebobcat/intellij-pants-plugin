@@ -16,8 +16,12 @@ import com.intellij.openapi.externalSystem.settings.ExternalProjectSettings;
 import com.intellij.openapi.externalSystem.test.ExternalSystemImportingTestCase;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
+import com.intellij.openapi.projectRoots.Sdk;
+import com.intellij.openapi.projectRoots.impl.JavaAwareProjectJdkTableImpl;
 import com.intellij.openapi.roots.CompilerModuleExtension;
 import com.intellij.openapi.roots.ModuleRootManager;
+import com.intellij.openapi.roots.ModuleRootModificationUtil;
+import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.TestDialog;
 import com.intellij.openapi.util.Disposer;
@@ -103,6 +107,10 @@ public abstract class PantsIntegrationTestCase extends ExternalSystemImportingTe
   @Override
   protected void setUpInWriteAction() throws Exception {
     super.setUpInWriteAction();
+
+    final Sdk sdk = JavaAwareProjectJdkTableImpl.getInstanceEx().getInternalJdk();
+    ProjectRootManager.getInstance(myProject).setProjectSdk(sdk);
+
     cleanProjectRoot();
 
     final List<File> foldersToCopy = new ArrayList<File>(getProjectFoldersToCopy());
@@ -159,13 +167,17 @@ public abstract class PantsIntegrationTestCase extends ExternalSystemImportingTe
     return super.getProjectPath() + "/" + StringUtil.notNullize(myRelativeProjectPath);
   }
 
-  @Nullable
-  public CompilerTester getCompilerTester() {
+  @NotNull
+  public CompilerTester getCompilerTester() throws Exception {
+    if (myCompilerTester == null) {
+      final List<Module> allModules = Arrays.asList(ModuleManager.getInstance(myProject).getModules());
+      myCompilerTester = new CompilerTester(myProject, allModules);
+    }
     return myCompilerTester;
   }
 
   @Nullable
-  protected File findClassFile(String className, String moduleName) {
+  protected File findClassFile(String className, String moduleName) throws Exception {
     assertNotNull("Compilation wasn't completed successfully!", getCompilerTester());
     final String compilerOutputUrl =
       ModuleRootManager.getInstance(getModule(moduleName)).getModuleExtension(CompilerModuleExtension.class).getCompilerOutputUrl();
@@ -244,8 +256,7 @@ public abstract class PantsIntegrationTestCase extends ExternalSystemImportingTe
 
   private List<CompilerMessage> compileAndGetMessages(Module... modules) throws Exception {
     final ModuleCompileScope scope = new ModuleCompileScope(myProject, modules, true);
-    myCompilerTester = new CompilerTester(myProject, Arrays.asList(scope.getAffectedModules()));
-    return myCompilerTester.make(scope);
+    return getCompilerTester().make(scope);
   }
 
   private Module[] getModules(final String... moduleNames) {

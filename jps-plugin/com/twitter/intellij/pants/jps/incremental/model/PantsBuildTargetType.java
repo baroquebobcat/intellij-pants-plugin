@@ -5,11 +5,13 @@ package com.twitter.intellij.pants.jps.incremental.model;
 
 import com.intellij.util.containers.ContainerUtil;
 import com.twitter.intellij.pants.jps.incremental.serialization.PantsJpsProjectExtensionSerializer;
+import com.twitter.intellij.pants.jps.util.PantsJpsUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.jps.builders.BuildTargetLoader;
 import org.jetbrains.jps.builders.BuildTargetType;
 import org.jetbrains.jps.model.JpsModel;
+import org.jetbrains.jps.model.JpsProject;
 
 import java.util.List;
 
@@ -27,8 +29,9 @@ public class PantsBuildTargetType extends BuildTargetType<PantsBuildTarget> {
   }
 
   public PantsBuildTarget getTarget(JpsModel model) {
-    final JpsPantsProjectExtension projectExtension = PantsJpsProjectExtensionSerializer.findPantsProjectExtension(model.getProject());
-    return projectExtension != null ?
+    final JpsProject jpsProject = model.getProject();
+    final JpsPantsProjectExtension projectExtension = PantsJpsProjectExtensionSerializer.findPantsProjectExtension(jpsProject);
+    return projectExtension != null && PantsJpsUtil.containsPantsModules(jpsProject.getModules()) ?
            new PantsBuildTarget(projectExtension.getTargetPath(), projectExtension.getTargetNames()) : null;
   }
 
